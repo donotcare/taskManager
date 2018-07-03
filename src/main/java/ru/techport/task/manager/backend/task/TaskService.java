@@ -5,10 +5,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.techport.task.manager.backend.message.MessageService;
-import ru.techport.task.manager.backend.task.notification.TaskNotification;
+import ru.techport.task.manager.backend.notification.Notification;
 import ru.techport.task.manager.backend.task.notification.TaskNotificationRepository;
 import ru.techport.task.manager.backend.user.User;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -43,15 +44,15 @@ public class TaskService {
         }
     }
 
-    public void save(Task task) {
-        messageService.fireEvent(new TaskSaveEvent(task));
+    public void save(Task task, List<Notification> notifications) {
+        messageService.fireEvent(new TaskSaveEvent(task, notifications));
     }
 
-    public void addNotification(TaskNotification taskNotification) {
-        taskNotificationRepository.save(taskNotification);
-    }
-
-    public List<TaskNotification> getNotificationsByTask(Task task) {
-        return taskNotificationRepository.getNotificationsByTask(task);
+    public List<Notification> getNotificationsByTask(Task task) {
+        if (task.getId() == null) {
+            return new ArrayList<>();
+        } else {
+            return taskNotificationRepository.getNotificationsByTask(task.getId());
+        }
     }
 }

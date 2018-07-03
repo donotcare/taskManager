@@ -7,8 +7,12 @@ import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.upload.Upload;
+import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
 import com.vaadin.flow.data.binder.Binder;
+import ru.techport.task.manager.backend.notification.Notification;
 import ru.techport.task.manager.backend.task.Task;
 import ru.techport.task.manager.backend.task.TaskService;
 import ru.techport.task.manager.backend.task.comment.Comment;
@@ -19,7 +23,7 @@ import ru.techport.task.manager.ui.task.message.MessageLayout;
 import ru.techport.task.manager.ui.task.message.MessageList;
 import ru.techport.task.manager.ui.task.notification.NotificationDialog;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class TaskEditDialog extends Dialog {
 
@@ -27,15 +31,16 @@ public class TaskEditDialog extends Dialog {
     private TaskService taskService;
     private UserService userService;
     private Task task;
+    private List<Notification> notifications;
 
-    private final TextField text = new TextField("Задача");
+    private final TextArea text = new TextArea("Задача");
     private final TextField taskDate = new TextField("Дата исполнения");
     private final TextField notificationDate = new TextField("Напоминание");
     private final MessageList messageList = new MessageList();
     private final ComboBox<User> authorCombo = new ComboBox("Автор");
     private final ComboBox<User> recipientCombo = new ComboBox("Исполнитель");
     private final Button save = new Button("Сохранить", e -> {
-        taskService.save(task);
+        taskService.save(task, notifications);
         close();
     });
     private final Button cancel = new Button("Выйти", e -> close());
@@ -59,6 +64,8 @@ public class TaskEditDialog extends Dialog {
         setWidth("100%");
         setHeight("100%");
         text.setWidth("100%");
+        text.setHeight("100%");
+        text.setSizeFull();
         authorCombo.setItems(task.getAuthor());
         authorCombo.setItemLabelGenerator(User::getName);
         authorCombo.setWidth("100%");
@@ -68,23 +75,32 @@ public class TaskEditDialog extends Dialog {
 
         HorizontalLayout firstLine = new HorizontalLayout(authorCombo, recipientCombo);
         firstLine.setWidth("100%");
-
-        NotificationDialog notificationDialog = new NotificationDialog(task, new ArrayList<>());
+        notifications = taskService.getNotificationsByTask(task);
+        NotificationDialog notificationDialog = new NotificationDialog(task, notifications);
         Button notificationButton = new Button("Настроить", e -> notificationDialog.open());
 
         HorizontalLayout secondLine = new HorizontalLayout(taskDate, notificationDate, notificationButton);
         secondLine.setAlignItems(FlexComponent.Alignment.BASELINE);
         secondLine.setWidth("100%");
 
+        MultiFileMemoryBuffer buffer = new MultiFileMemoryBuffer();
+
         VerticalLayout main = new VerticalLayout();
         main.add(firstLine, secondLine, text);
         main.setSizeFull();
+
+        Upload upload = new Upload(buffer);
+        upload.setMaxFileSize(5_000_000);
+        upload.setMaxFiles(3);
+
+        HorizontalLayout form = new HorizontalLayout();
+        form.add(main, upload);
 
         VerticalLayout messageForm = new VerticalLayout();
         messageForm.add(messageList, createMessageLayout());
 
         HorizontalLayout buttons = new HorizontalLayout(save, cancel);
-        add(main, messageForm, buttons);
+        add(form, messageForm, buttons);
 
         bindValues();
         getComments();

@@ -9,13 +9,14 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Entity
 public class Task implements Serializable {
     @Id
     @GeneratedValue
-    private long id;
+    private Long id;
     @OneToOne
     @JoinColumn(nullable = false)
     private User author;
@@ -28,6 +29,9 @@ public class Task implements Serializable {
     private String text;
     @ElementCollection(fetch = FetchType.LAZY)
     private List<Comment> comments = new ArrayList<>();
+
+    @Transient
+    private List<String> files = Arrays.asList("raspiska.pdf", "dogovor-prodazhi.doc", "skrin.jpeg");
 
     private Task() {
     }
@@ -46,7 +50,7 @@ public class Task implements Serializable {
         this.text = text;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -92,6 +96,14 @@ public class Task implements Serializable {
 
     public List<Comment> getComments() {
         return comments;
+    }
+
+    public void addFile(String file) {
+        files.add(file);
+    }
+
+    public List<String> getFiles() {
+        return files;
     }
 
     public static Task of(User author, User recipient, LocalDateTime taskDate, String text) {

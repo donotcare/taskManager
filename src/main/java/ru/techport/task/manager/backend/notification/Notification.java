@@ -10,16 +10,25 @@ import java.time.LocalDateTime;
 public class Notification {
     @Id
     @GeneratedValue
-    private long id;
+    private Long id;
     private LocalDateTime notificationDate;
     @Enumerated(EnumType.STRING)
     private NotificationType type;
 
-    public Notification(LocalDateTime notificationDate) {}
+    public Notification() {
+
+    }
+
+    public Notification(LocalDateTime notificationDate) {
+    }
 
     private Notification(LocalDateTime notificationDate, NotificationType type) {
         this.notificationDate = notificationDate;
         this.type = type;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public LocalDateTime getNotificationDate() {

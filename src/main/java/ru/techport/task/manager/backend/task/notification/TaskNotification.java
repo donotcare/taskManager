@@ -13,17 +13,24 @@ import java.util.Objects;
 @Immutable
 public class TaskNotification {
     @EmbeddedId
-    private Id id;
+    private Id id = new Id();
     @ManyToOne
     @JoinColumn(insertable = false, updatable = false)
     private Task task;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(insertable = false, updatable = false)
     private Notification notification;
+    public TaskNotification(){ }
 
     private TaskNotification(Task task, Notification notification) {
+        this.id.notificationId = notification.getId();
+        this.id.taskId = task.getId();
         this.task = task;
         this.notification = notification;
+    }
+
+    public Id getId() {
+        return id;
     }
 
     public Task getTask() {
@@ -41,11 +48,12 @@ public class TaskNotification {
     @Embeddable
     private static class Id implements Serializable {
         @Column(name = "task_id")
-        private long taskId;
+        private Long taskId;
         @Column(name = "notification_id")
-        private long notificationId;
+        private Long notificationId;
 
-        public Id() { }
+        public Id() {
+        }
 
         public Id(long taskId, long notificationId) {
             this.taskId = taskId;
