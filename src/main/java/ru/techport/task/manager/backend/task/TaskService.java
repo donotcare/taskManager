@@ -1,6 +1,7 @@
 package ru.techport.task.manager.backend.task;
 
 
+import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -44,8 +45,8 @@ public class TaskService {
         }
     }
 
-    public void save(Task task, List<Notification> notifications) {
-        messageService.fireEvent(new TaskSaveEvent(task, notifications));
+    public void save(Task task, List<Notification> notifications, MultiFileMemoryBuffer buffer) {
+        messageService.fireEvent(new TaskSaveEvent(task, notifications, buffer));
     }
 
     public List<Notification> getNotificationsByTask(Task task) {

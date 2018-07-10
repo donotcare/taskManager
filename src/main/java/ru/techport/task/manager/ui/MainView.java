@@ -1,7 +1,6 @@
 package ru.techport.task.manager.ui;
 
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.dependency.HtmlImport;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tab;
@@ -13,7 +12,6 @@ import ru.techport.task.manager.ui.feed.TabEvent;
 import ru.techport.task.manager.ui.task.TabTask;
 
 
-@HtmlImport("styles/shared-styles.html")
 @Route
 @PageTitle("Задачи")
 public class MainView extends VerticalLayout implements RouterLayout {
@@ -26,9 +24,9 @@ public class MainView extends VerticalLayout implements RouterLayout {
         Tabs tabs = new Tabs();
         tabs.add(taskTab, messagesTab);
         tabs.addSelectedChangeListener(event -> tabs.getUI().ifPresent(ui -> navigate(event.getSource().getSelectedTab(), ui)));
-        tabs.setSelectedIndex(0);
         HorizontalLayout tabsLayout = new HorizontalLayout(tabs);
         add(tabsLayout);
+        tabs.setSelectedTab(taskTab);
     }
 
     private void navigate(Tab tab, UI ui) {

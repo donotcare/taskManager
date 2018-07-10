@@ -9,8 +9,8 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Task implements Serializable {
@@ -31,7 +31,7 @@ public class Task implements Serializable {
     private List<Comment> comments = new ArrayList<>();
 
     @Transient
-    private List<String> files = Arrays.asList("raspiska.pdf", "dogovor-prodazhi.doc", "skrin.jpeg");
+    private List<String> files = new ArrayList<>();
 
     private Task() {
     }
@@ -117,5 +117,9 @@ public class Task implements Serializable {
                 .add("recipient", recipient)
                 .add("status", status)
                 .toString();
+    }
+
+    public void setFiles(Set<String> files) {
+        this.files = new ArrayList<>(files);
     }
 }

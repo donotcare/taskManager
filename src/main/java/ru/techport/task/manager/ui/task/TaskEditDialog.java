@@ -19,6 +19,7 @@ import ru.techport.task.manager.backend.task.comment.Comment;
 import ru.techport.task.manager.backend.user.User;
 import ru.techport.task.manager.backend.user.UserService;
 import ru.techport.task.manager.ui.system.DateUtils;
+import ru.techport.task.manager.ui.task.files.FilesDialog;
 import ru.techport.task.manager.ui.task.message.MessageLayout;
 import ru.techport.task.manager.ui.task.message.MessageList;
 import ru.techport.task.manager.ui.task.notification.NotificationDialog;
@@ -32,6 +33,7 @@ public class TaskEditDialog extends Dialog {
     private UserService userService;
     private Task task;
     private List<Notification> notifications;
+    private final MultiFileMemoryBuffer buffer = new MultiFileMemoryBuffer();
 
     private final TextArea text = new TextArea("Задача");
     private final TextField taskDate = new TextField("Дата исполнения");
@@ -40,10 +42,12 @@ public class TaskEditDialog extends Dialog {
     private final ComboBox<User> authorCombo = new ComboBox("Автор");
     private final ComboBox<User> recipientCombo = new ComboBox("Исполнитель");
     private final Button save = new Button("Сохранить", e -> {
-        taskService.save(task, notifications);
+        taskService.save(task, notifications, buffer);
         close();
     });
     private final Button cancel = new Button("Выйти", e -> close());
+    private final Button files = new Button("Файлы", e -> new FilesDialog(task.getFiles()).open());
+
     private Binder<Task> binder = new Binder<>(Task.class);
 
     public TaskEditDialog(UserService userService, TaskService taskService, Task task) {
@@ -83,7 +87,7 @@ public class TaskEditDialog extends Dialog {
         secondLine.setAlignItems(FlexComponent.Alignment.BASELINE);
         secondLine.setWidth("100%");
 
-        MultiFileMemoryBuffer buffer = new MultiFileMemoryBuffer();
+
 
         VerticalLayout main = new VerticalLayout();
         main.add(firstLine, secondLine, text);
@@ -99,7 +103,7 @@ public class TaskEditDialog extends Dialog {
         VerticalLayout messageForm = new VerticalLayout();
         messageForm.add(messageList, createMessageLayout());
 
-        HorizontalLayout buttons = new HorizontalLayout(save, cancel);
+        HorizontalLayout buttons = new HorizontalLayout(save, cancel, files);
         add(form, messageForm, buttons);
 
         bindValues();
