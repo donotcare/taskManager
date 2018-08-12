@@ -1,8 +1,8 @@
-package ru.techport.task.manager.ui.task.message;
+package ru.techport.task.manager.ui.task.dialog.message;
 
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import ru.techport.task.manager.backend.task.comment.Comment;
+import ru.techport.task.manager.backend.comment.Comment;
 
 import java.time.format.DateTimeFormatter;
 

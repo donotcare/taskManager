@@ -2,38 +2,35 @@ package ru.techport.task.manager.backend.task;
 
 
 import com.google.common.base.MoreObjects;
-import ru.techport.task.manager.backend.task.comment.Comment;
 import ru.techport.task.manager.backend.user.User;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 @Entity
-public class Task implements Serializable {
+public class Task {
     @Id
     @GeneratedValue
     private Long id;
+    @Version
+    private int version;
     @OneToOne
     @JoinColumn(nullable = false)
     private User author;
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     private User recipient;
     @Enumerated(EnumType.STRING)
     private TaskStatus status;
     private LocalDateTime taskDate;
     private String text;
-    @ElementCollection(fetch = FetchType.LAZY)
-    private List<Comment> comments = new ArrayList<>();
-
     @Transient
     private List<String> files = new ArrayList<>();
 
-    private Task() {
+    protected Task() {
     }
 
     public Task(User author) {
@@ -88,14 +85,6 @@ public class Task implements Serializable {
 
     public void setTaskDate(LocalDateTime taskDate) {
         this.taskDate = taskDate;
-    }
-
-    public void addComment(Comment comment) {
-        comments.add(comment);
-    }
-
-    public List<Comment> getComments() {
-        return comments;
     }
 
     public void addFile(String file) {

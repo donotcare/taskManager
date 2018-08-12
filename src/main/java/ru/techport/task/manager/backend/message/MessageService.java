@@ -7,9 +7,7 @@ import org.springframework.stereotype.Service;
 import ru.techport.task.manager.backend.user.User;
 import ru.techport.task.manager.backend.user.UserService;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -18,15 +16,31 @@ public class MessageService {
     private ApplicationEventPublisher publisher;
     @Autowired
     private UserService userService;
-
-    private final List<EventMessage> messages = new ArrayList<>();
+    @Autowired
+    private MessageRepository repository;
 
     public List<EventMessage> getMessagesByAuthor(User author) {
-        return messages.stream().filter(m -> m.getAuthor().equals(author)).collect(Collectors.toList());
+        return repository.findEventMessageByAuthor(author);
+    }
+
+    public void save(EventMessage message) {
+        repository.save(message);
+    }
+
+    public void delete(EventMessage message) {
+        repository.delete(message);
     }
 
     public void addMessage(String message) {
-        messages.add(new EventMessage(userService.getCurrentUser(), message));
+        repository.save(new EventMessage(userService.getCurrentUser(), EventType.SUCCESS, "Simple message", message));
+    }
+
+    public EventMessage getMessagebyId(long id) {
+        return repository.getOne(id);
+    }
+
+    public void retryEvent(long eventId, String className) {
+        fireEvent(new RetryEvent(eventId, className));
     }
 
     public void fireEvent(Object event) {

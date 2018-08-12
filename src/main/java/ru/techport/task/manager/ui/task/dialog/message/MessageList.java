@@ -1,4 +1,4 @@
-package ru.techport.task.manager.ui.task.message;
+package ru.techport.task.manager.ui.task.dialog.message;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.html.Div;

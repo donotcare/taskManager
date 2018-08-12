@@ -8,8 +8,8 @@ import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLayout;
-import ru.techport.task.manager.ui.feed.TabEvent;
-import ru.techport.task.manager.ui.task.TabTask;
+import ru.techport.task.manager.ui.event.EventTab;
+import ru.techport.task.manager.ui.task.TaskTab;
 
 
 @Route
@@ -32,10 +32,10 @@ public class MainView extends VerticalLayout implements RouterLayout {
     private void navigate(Tab tab, UI ui) {
         switch (tab.getLabel()) {
             case taskLabel:
-                ui.navigate(TabTask.class);
+                ui.navigate(TaskTab.class);
                 break;
             case messagesLabel:
-                ui.navigate(TabEvent.class);
+                ui.navigate(EventTab.class);
                 break;
         }
     }

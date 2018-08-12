@@ -71,7 +71,6 @@ public class TaskNotification {
 
         @Override
         public int hashCode() {
-
             return Objects.hash(taskId, notificationId);
         }
     }

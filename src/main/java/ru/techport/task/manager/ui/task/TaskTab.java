@@ -3,7 +3,6 @@ package ru.techport.task.manager.ui.task;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
-import com.vaadin.flow.component.dependency.HtmlImport;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -16,16 +15,16 @@ import ru.techport.task.manager.backend.task.TaskService;
 import ru.techport.task.manager.backend.user.User;
 import ru.techport.task.manager.backend.user.UserService;
 import ru.techport.task.manager.ui.MainView;
+import ru.techport.task.manager.ui.task.dialog.TaskEditDialog;
 
-@HtmlImport("styles/shared-styles.html")
 @Route(value = "task", layout = MainView.class)
-public class TabTask extends VerticalLayout {
+public class TaskTab extends VerticalLayout {
     private final Grid<Task> grid = new Grid<>();
     private ComboBox<User> recipientCombo = new ComboBox<>();
     private final TaskService service;
 
     @Autowired
-    public TabTask(TaskService service, UserService userService) {
+    public TaskTab(TaskService service, UserService userService) {
         this.service = service;
         recipientCombo.setPlaceholder("Исполнитель");
         recipientCombo.setItems(userService.getAll());

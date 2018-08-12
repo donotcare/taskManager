@@ -1,17 +1,20 @@
-package ru.techport.task.manager.backend.task;
+package ru.techport.task.manager.backend.task.event;
 
 import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
 import org.springframework.context.ApplicationEvent;
 import ru.techport.task.manager.backend.notification.Notification;
+import ru.techport.task.manager.backend.task.Task;
 
 import java.util.List;
 
-public class TaskSaveEvent extends ApplicationEvent {
+public class TaskSavedEvent extends ApplicationEvent {
+    private final Task task;
     private final List<Notification> notifications;
-    private final MultiFileMemoryBuffer buffer;
+    private final transient MultiFileMemoryBuffer buffer;
 
-    public TaskSaveEvent(Task task, List<Notification> notifications, MultiFileMemoryBuffer buffer) {
+    public TaskSavedEvent(Task task, List<Notification> notifications, MultiFileMemoryBuffer buffer) {
         super(task);
+        this.task = task;
         this.notifications = notifications;
         this.buffer = buffer;
     }
@@ -21,7 +24,7 @@ public class TaskSaveEvent extends ApplicationEvent {
     }
 
     public Task getTask() {
-        return (Task) source;
+        return task;
     }
 
     public MultiFileMemoryBuffer getFilesBuffer() {

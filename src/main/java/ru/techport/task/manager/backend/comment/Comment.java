@@ -1,25 +1,32 @@
-package ru.techport.task.manager.backend.task.comment;
+package ru.techport.task.manager.backend.comment;
 
 
+import jdk.nashorn.internal.ir.annotations.Immutable;
+import ru.techport.task.manager.backend.task.Task;
 import ru.techport.task.manager.backend.user.User;
 
-import javax.persistence.Embeddable;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Embeddable
+@Entity
+@Immutable
 public class Comment {
+    @Id
+    @GeneratedValue
+    private Long id;
     @OneToOne
     @JoinColumn(nullable = false)
     private User author;
     private LocalDateTime created;
     private String message;
+    @ManyToOne
+    private Task task;
 
     public Comment() {
     }
 
-    public Comment(User author, String message) {
+    public Comment(User author, Task task, String message) {
+        this.task = task;
         this.author = author;
         this.created = LocalDateTime.now();
         this.message = message;

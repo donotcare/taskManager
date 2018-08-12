@@ -1,4 +1,4 @@
-package ru.techport.task.manager.ui.task;
+package ru.techport.task.manager.ui.task.dialog;
 
 
 import com.vaadin.flow.component.button.Button;
@@ -12,35 +12,31 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
 import com.vaadin.flow.data.binder.Binder;
+import ru.techport.task.manager.backend.comment.CommentService;
 import ru.techport.task.manager.backend.notification.Notification;
 import ru.techport.task.manager.backend.task.Task;
 import ru.techport.task.manager.backend.task.TaskService;
-import ru.techport.task.manager.backend.task.comment.Comment;
 import ru.techport.task.manager.backend.user.User;
 import ru.techport.task.manager.backend.user.UserService;
 import ru.techport.task.manager.ui.system.DateUtils;
-import ru.techport.task.manager.ui.task.files.FilesDialog;
-import ru.techport.task.manager.ui.task.message.MessageLayout;
-import ru.techport.task.manager.ui.task.message.MessageList;
-import ru.techport.task.manager.ui.task.notification.NotificationDialog;
+import ru.techport.task.manager.ui.task.dialog.files.FilesDialog;
+import ru.techport.task.manager.ui.task.dialog.message.MessageForm;
+import ru.techport.task.manager.ui.task.dialog.notification.NotificationDialog;
 
 import java.util.List;
 
 public class TaskEditDialog extends Dialog {
-
-
     private TaskService taskService;
     private UserService userService;
+    private CommentService commentService;
     private Task task;
     private List<Notification> notifications;
     private final MultiFileMemoryBuffer buffer = new MultiFileMemoryBuffer();
-
     private final TextArea text = new TextArea("Задача");
     private final TextField taskDate = new TextField("Дата исполнения");
     private final TextField notificationDate = new TextField("Напоминание");
-    private final MessageList messageList = new MessageList();
-    private final ComboBox<User> authorCombo = new ComboBox("Автор");
-    private final ComboBox<User> recipientCombo = new ComboBox("Исполнитель");
+    private final ComboBox<User> authorCombo = new ComboBox<>("Автор");
+    private final ComboBox<User> recipientCombo = new ComboBox<>("Исполнитель");
     private final Button save = new Button("Сохранить", e -> {
         taskService.save(task, notifications, buffer);
         close();
@@ -50,9 +46,10 @@ public class TaskEditDialog extends Dialog {
 
     private Binder<Task> binder = new Binder<>(Task.class);
 
-    public TaskEditDialog(UserService userService, TaskService taskService, Task task) {
-        this.userService = userService;
+    public TaskEditDialog(TaskService taskService, UserService userService, CommentService commentService, Task task) {
         this.taskService = taskService;
+        this.userService = userService;
+        this.commentService = commentService;
         this.task = task;
         init();
     }
@@ -87,8 +84,6 @@ public class TaskEditDialog extends Dialog {
         secondLine.setAlignItems(FlexComponent.Alignment.BASELINE);
         secondLine.setWidth("100%");
 
-
-
         VerticalLayout main = new VerticalLayout();
         main.add(firstLine, secondLine, text);
         main.setSizeFull();
@@ -100,14 +95,10 @@ public class TaskEditDialog extends Dialog {
         HorizontalLayout form = new HorizontalLayout();
         form.add(main, upload);
 
-        VerticalLayout messageForm = new VerticalLayout();
-        messageForm.add(messageList, createMessageLayout());
-
         HorizontalLayout buttons = new HorizontalLayout(save, cancel, files);
-        add(form, messageForm, buttons);
+        add(form, new MessageForm(task, commentService), buttons);
 
         bindValues();
-        getComments();
     }
 
     private void bindValues() {
@@ -116,30 +107,6 @@ public class TaskEditDialog extends Dialog {
         binder.forField(recipientCombo).bind(Task::getRecipient, Task::setRecipient);
         binder.forField(taskDate).bind(t -> DateUtils.dateTimeToString(t.getTaskDate()), (t, v) -> t.setTaskDate(DateUtils.stringToDateTime(v)));
         binder.bindInstanceFields(this);
-    }
-
-    private HorizontalLayout createMessageLayout() {
-        HorizontalLayout inputLayout = new HorizontalLayout();
-        TextField messageField = new TextField();
-        Button sendButton = new Button("Отправить");
-        sendButton.addClickListener(e -> {
-            Comment newComment = new Comment(userService.getCurrentUser(), messageField.getValue());
-            task.addComment(newComment);
-            messageList.add(new MessageLayout(newComment));
-            messageField.clear();
-        });
-        inputLayout.setWidth("100%");
-        inputLayout.add(messageField, sendButton);
-        inputLayout.expand(messageField);
-
-        messageField.setPlaceholder("Введите сообщение ...");
-        sendButton.getElement().getThemeList().add("primary");
-
-        return inputLayout;
-    }
-
-    public void getComments() {
-        task.getComments().forEach(c -> messageList.add(new MessageLayout(c)));
     }
 
 }

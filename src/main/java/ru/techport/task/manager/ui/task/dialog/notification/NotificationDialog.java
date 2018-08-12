@@ -1,4 +1,4 @@
-package ru.techport.task.manager.ui.task.notification;
+package ru.techport.task.manager.ui.task.dialog.notification;
 
 
 import com.vaadin.flow.component.button.Button;

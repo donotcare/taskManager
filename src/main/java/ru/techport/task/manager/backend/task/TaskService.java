@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.techport.task.manager.backend.message.MessageService;
 import ru.techport.task.manager.backend.notification.Notification;
+import ru.techport.task.manager.backend.task.event.TaskSavedEvent;
 import ru.techport.task.manager.backend.task.notification.TaskNotificationRepository;
 import ru.techport.task.manager.backend.user.User;
 
@@ -33,10 +34,6 @@ public class TaskService {
         return taskRepository.findById(id).orElseThrow(RuntimeException::new);
     }
 
-    public Task getTaskWithComments(long id) {
-        return taskRepository.findByIdWithComments(id).orElseThrow(RuntimeException::new);
-    }
-
     public Page<Task> getTasksByRecipient(User recipient, Pageable page) {
         if (recipient == null) {
             return taskRepository.findAll(page);
@@ -46,7 +43,7 @@ public class TaskService {
     }
 
     public void save(Task task, List<Notification> notifications, MultiFileMemoryBuffer buffer) {
-        messageService.fireEvent(new TaskSaveEvent(task, notifications, buffer));
+        messageService.fireEvent(new TaskSavedEvent(task, notifications, buffer));
     }
 
     public List<Notification> getNotificationsByTask(Task task) {

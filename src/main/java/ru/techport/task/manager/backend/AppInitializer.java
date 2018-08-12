@@ -10,6 +10,7 @@ import ru.techport.task.manager.backend.user.User;
 import ru.techport.task.manager.backend.user.UserRepository;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 public class AppInitializer {
@@ -27,9 +28,12 @@ public class AppInitializer {
         userRepository.save(userOne);
         User userTwo = new User("Petrov Petr", "zhmylevaa@gmail.com");
         userRepository.save(userTwo);
+        Optional<User> uss = userRepository.findById(userOne.getId());
         Task firstTask = Task.of(userOne, userTwo, LocalDateTime.now(), "Передать накладную");
         taskRepository.save(firstTask);
         Task secondTask = Task.of(userTwo, userOne, LocalDateTime.now(), "Передать накладную");
         taskRepository.save(secondTask);
+        Iterable<Task> tasks = taskRepository.findAll();
+        System.out.println(tasks);
     }
 }
